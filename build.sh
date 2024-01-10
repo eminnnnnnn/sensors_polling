@@ -16,5 +16,11 @@ then
     DEBUG_FLAG=-g
 fi
 
-g++ $ALT_LIBPATH $ALT_INCPATH $DEBUG_FLAG -std=c++17 server.cc -o server -lwiringPi
-g++ $DEBUG_FLAG -std=c++17 client.cc -o client
+SOCKET_DIR_FLAG=
+if [ ! -z $UNIX_SOCKET_DIR ]
+then
+    SOCKET_DIR_FLAG="-DUNIX_SOCKET_DIR=\"${UNIX_SOCKET_DIR}\""
+fi
+
+g++ $ALT_LIBPATH $ALT_INCPATH $DEBUG_FLAG $SOCKET_DIR_FLAG -std=c++17 server.cc -o server -lwiringPi
+g++ $DEBUG_FLAG $SOCKET_DIR_FLAG -std=c++17 client.cc -o client

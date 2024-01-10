@@ -20,7 +20,11 @@
         : void(0)                                                       \
     )
 
+#ifndef UNIX_SOCKET_DIR
 const char UNIX_SOCKET_PATH[] = "/home/.sensors_sock/sock";
+#else
+const char UNIX_SOCKET_PATH[] = UNIX_SOCKET_DIR"/sock";
+#endif
 
 std::tuple<int, sockaddr_un>
 create_unix_socket ()
