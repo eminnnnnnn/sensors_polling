@@ -6,6 +6,8 @@ then
     echo "Using default path (${UNIX_SOCKET_DIR}) to create dir for unix socket"
 fi
 
+UNIX_SOCKET_DIR=$(realpath ${UNIX_SOCKET_DIR})
+
 sudo mkdir -v -p $UNIX_SOCKET_DIR
 sudo chmod 777 $UNIX_SOCKET_DIR
 
