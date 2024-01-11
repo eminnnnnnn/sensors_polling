@@ -1,9 +1,65 @@
 #ifndef SENSORS_HH
 #define SENSORS_HH
 
+#include <functional>
+#include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 #include <wiringPi.h>
+
+/*
+ * TODO: Maybe it would be better to read configuration of connected
+ * sensors from some file (.conf or .ini) and dynamically initialize
+ * containters. Configuration file contains information about sensor
+ * name, connected pins, type (single data signal or protocol),
+ * data transfer timings (in case of non-standard protocol)
+ */
+
+struct sensor_t
+{
+    std::string name;
+    int pin;
+    std::function<int(int)> poll_function;
+    const char* description;
+};
+
+
+class sensors_map_t : public std::unordered_map<std::string, sensor_t>
+{
+  public:
+    using std::unordered_map<std::string, sensor_t>::unordered_map;
+
+    int poll_sensor (const char* name) const
+    {
+        auto sensor = find (name);
+        if (sensor != end ()) {
+            return sensor->second.poll_function (sensor->second.pin);
+        }
+        return -1;
+    }
+};
+
+int poll_tilt (int pin);
+int poll_flame (int pin);
+int poll_knock (int pin);
+int poll_humidity (int pin);
+int poll_temperature (int pin);
+
+// one data wire sensors
+const sensors_map_t sensors {
+    { "temp",
+      { "ky_015", 23, poll_temperature, "Temperature" } },
+    { "hum",
+      { "ky_015", 23, poll_humidity,    "Humidity" } },
+    { "tilt",
+      { "ky_017", 19, poll_tilt,        "Tilt" } },
+    { "flame",
+      { "ky_026", 20, poll_flame,       "Flame" } },
+    { "knock",
+      { "ky_031", 22, poll_knock,       "Knock" }
+    }
+};
 
 // KY-017
 int poll_tilt (int pin)

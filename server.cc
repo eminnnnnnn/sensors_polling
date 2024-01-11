@@ -9,32 +9,6 @@
 #include "common.hh"
 #include "sensors.hh"
 
-int poll_sensors (const char* sensor_name)
-{
-    using std::strncmp;
-    auto strncmp_t = [] (const char* s1, const char* s2)
-                     { return strncmp (s1, s2, sizeof (s2)); };
-
-    const int ky_017_pin = 19;
-    const int ky_026_pin = 20;
-    const int ky_031_pin = 22;
-    const int ky_015_pin = 23;
-
-    if (strncmp_t (sensor_name, "tilt") == 0) {
-        return poll_tilt (ky_017_pin);
-    } else if (strncmp_t (sensor_name, "flame") == 0) {
-        return poll_flame (ky_026_pin);
-    } else if (strncmp_t (sensor_name, "temp") == 0) {
-        return poll_temperature (ky_015_pin);
-    } else if (strncmp_t (sensor_name, "hum") == 0) {
-        return poll_humidity (ky_015_pin);
-    } else if (strncmp_t (sensor_name, "knock") == 0) {
-        return poll_knock (ky_031_pin);
-    } else {
-        return -1;
-    }
-}
-
 int main (int argc, char** argv)
 {
     setenv ("WIRINGPI_CODES", "1", true);
@@ -67,7 +41,7 @@ int main (int argc, char** argv)
         ssize_t recvd_nbytes = read (client_sock, in_buffer, sizeof (in_buffer));
         // TODO: Add in_buffer validation
         if (recvd_nbytes != 0) {
-            return_value = poll_sensors (in_buffer);
+            return_value = sensors.poll_sensor (in_buffer);
             write (client_sock, &return_value, sizeof (return_value));
             std::memset (in_buffer, 0, recvd_nbytes);
         }
