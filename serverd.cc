@@ -87,12 +87,13 @@ int main (int argc, char** argv)
 
         ssize_t recvd_nbytes = read (client_sock, in_buffer, sizeof (in_buffer));
         // TODO: Add in_buffer validation
-        if (recvd_nbytes != 0) {
-            syslog (LOG_INFO, "Received request to poll %s sensor", in_buffer);
+        if (recvd_nbytes > 0) {
+            // Logging every request floods the syslog, so use it for debug purpose
+            // syslog (LOG_INFO, "Received request to poll %s sensor", in_buffer);
             return_value = sensors.poll_sensor (in_buffer);
-            write (client_sock, &return_value, sizeof (return_value));
             std::memset (in_buffer, 0, recvd_nbytes);
         }
+        write (client_sock, &return_value, sizeof (return_value));
 
         close (client_sock);
         opened_fds.pop_back ();

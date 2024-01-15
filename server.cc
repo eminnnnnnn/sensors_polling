@@ -40,11 +40,11 @@ int main (int argc, char** argv)
                               &client_addr_len);
         ssize_t recvd_nbytes = read (client_sock, in_buffer, sizeof (in_buffer));
         // TODO: Add in_buffer validation
-        if (recvd_nbytes != 0) {
+        if (recvd_nbytes > 0) {
             return_value = sensors.poll_sensor (in_buffer);
-            write (client_sock, &return_value, sizeof (return_value));
             std::memset (in_buffer, 0, recvd_nbytes);
         }
+        write (client_sock, &return_value, sizeof (return_value));
 
         close (client_sock);
         return_value = -1;
