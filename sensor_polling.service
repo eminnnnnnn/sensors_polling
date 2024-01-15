@@ -5,3 +5,7 @@ Description=Dumb server to poll sensors on the PC board
 User=root
 # WorkingDirectory=/
 ExecStart=/usr/local/bin/sensor_polling_server
+Type=forking
+
+[Install]
+WantedBy=multi-user.target
